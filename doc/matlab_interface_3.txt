@@ -1,0 +1,27 @@
+lu = lusol(A);
+
+% solving
+x = lu.solve(b);    % extra for solveA
+x = lu.solveA(b);
+x = lu.solveAt(b);
+x = lu.solveL(b);
+x = lu.solveLt(b);
+x = lu.solveU(b);
+x = lu.solveUt(b);
+
+% updating
+lu.repcol(v,j);
+lu.reprow(v,i);
+lu.addcol(v);
+lu.addrow(v);
+lu.delcol(j);
+lu.delrow(i);
+lu.mod(l,u);
+
+% multiplying
+y = lu.mulA(x)
+y = lu.mulAt(x)
+y = lu.mulL(x)
+y = lu.mulLt(x)
+y = lu.mulU(x)
+y = lu.mulUt(x)

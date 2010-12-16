@@ -1,0 +1,20 @@
+lu6sol
+var_name c_type m_type M     N     comment
+mode     int    int32  1     1     subroutine mode
+m        int    int32  1     1     number of rows
+n        int    int32  1     1     number of rows
+v        double double m     1     io vector
+w        double double n     1     io vector
+lena     int    int32  1     1     length of storage
+luparm   int    int32  30    1     integer parameters
+parmlu   double double 30    1     double parameters
+a        double double lena  1     non-zeros
+indc     int    int32  lena  1     indices
+indr     int    int32  lena  1     indices
+ip       int    int32  m     1     row permutation
+iq       int    int32  n     1     col permutation
+lenc     int    int32  n     1     
+lenr     int    int32  m     1                  
+locc     int    int32  n     1                  
+locr     int    int32  m     1     
+inform   int    int32  1     1  

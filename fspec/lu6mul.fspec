@@ -1,0 +1,19 @@
+lu6mul
+var_name c_type m_type M     N     comment
+mode     int    int32  1     1
+m        int    int32  1     1
+n        int    int32  1     1 
+v        double double m     1
+w        double double n     1
+lena     int    int32  1     1 
+luparm   int    int32  30    1
+parmlu   double double 30    1
+a        double double lena  1
+indc     int    int32  lena  1
+indr     int    int32  lena  1
+ip       int    int32  m     1
+iq       int    int32  n     1
+lenc     int    int32  n     1
+lenr     int    int32  m     1
+locc     int    int32  n     1
+locr     int    int32  m     1

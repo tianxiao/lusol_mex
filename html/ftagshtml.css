@@ -1,0 +1,17 @@
+CODE {color:#660000; font-family: Arial, serif; background-color:#ddffff;}
+COMMENT {color:BLACK; text-style:bold; background-color:#ffffdd; font-family: Gothic, roman; font-weight: bold;}
+ARGLIST {color:MAGENTA; background-color:#ccffdd; font-weight: bold}
+STRING {color:BROWN; text-style:italic; background-color:#ffffdd; font-family: Gothic, roman; font-weight: italic;}
+DECLARE {color:#FF9900}
+VARIABLE {color:GREEN; text-style:underline}
+BRANCHEMENT {color:#6600EE; background-color:#aaffaa; font-style: italic}
+SUBR {color:#660000; font-family: Arial, serif; background-color:#ddffff;}
+HEADER {color:MAGENTA; background-color:#ccffdd}
+VERBATIM {color:GREEN; background-color:#ffaadd}
+LIENSINDEX {color:GREEN; background-color:#ccbbee}
+TEST {color:#33DDDF}
+LABEL {color:GREEN}
+READ {color:#FF7799; text-style:underline}
+LOOP {color:#33DD99; text-style:underline}
+INFO {color:RED; text-style:normal; background-color:WHITE}
+GETIN {color:RED; text-style:normal; background-color:GREEN}

@@ -1,0 +1,6 @@
+List of LUSOL bugs:
+
+- multiplies with A' produce incorrect results
+- LUSOL will segfault if given an empty matrix and pivot='TRP'
+
+

@@ -1,0 +1,23 @@
+lu1fac
+var_name c_type m_type M     N     comment
+m        int    int32  1     1     number of rows
+n        int    int32  1     1     number of columns
+nelem    int    int32  1     1     number of matrix entries
+lena     int    int32  1     1     dimension of a, indc, and indr
+luparm   int    int32  30    1     parameter vector
+parmlu   double double 30    1     parameter vector
+a        double double lena  1     nonzero entries
+indc     int    int32  lena  1     indices
+indr     int    int32  lena  1     indices
+ip       int    int32  m     1     row permutations
+iq       int    int32  n     1     column permutations
+lenc     int    int32  n     1     number of entries in nontrivial columns of L in pivot order
+lenr     int    int32  m     1     number of entries in each row of U in original order
+locc     int    int32  n     1     "ready for LU update routines"
+locr     int    int32  m     1     "points to the beginning of the rows of U in a, indr"
+iploc    int    int32  n     1     
+iqloc    int    int32  m     1     
+ipinv    int    int32  m     1     
+iqinv    int    int32  n     1     
+w        double double n     1     
+inform   int    int32  1     1     
