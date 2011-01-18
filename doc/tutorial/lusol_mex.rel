@@ -1,0 +1,46 @@
+;; RefTeX parse info file
+;; File: /Users/nwh/Dropbox/code/lusol_mex/doc/tutorial/lusol_mex.tex
+;; User: nwh (Nicholas Henderson)
+
+(set reftex-docstruct-symbol '(
+
+
+(xr nil "\\\\\\\\\\\\")
+
+(index-tags)
+
+(is-multi nil)
+
+(bibview-cache)
+
+(master-dir . "/Users/nwh/Dropbox/code/lusol_mex/doc/tutorial/")
+
+(label-numbers)
+
+(bof "/Users/nwh/Dropbox/code/lusol_mex/doc/tutorial/lusol_mex.tex")
+
+(toc "toc" "    1 Introduction" "/Users/nwh/Dropbox/code/lusol_mex/doc/tutorial/lusol_mex.tex" nil 2 "1" "\\section{Introduction}" 537)
+
+(toc "toc" "    2 System requirements" "/Users/nwh/Dropbox/code/lusol_mex/doc/tutorial/lusol_mex.tex" nil 2 "2" "\\section{System requirements}" 1014)
+
+(toc "toc" "    3 Building" "/Users/nwh/Dropbox/code/lusol_mex/doc/tutorial/lusol_mex.tex" nil 2 "3" "\\section{Building}" 2096)
+
+(toc "toc" "    4 Testing" "/Users/nwh/Dropbox/code/lusol_mex/doc/tutorial/lusol_mex.tex" nil 2 "4" "\\section{Testing}" 2686)
+
+(toc "toc" "    5 Design" "/Users/nwh/Dropbox/code/lusol_mex/doc/tutorial/lusol_mex.tex" nil 2 "5" "\\section{Design}" 3066)
+
+(toc "toc" "    6 Usage" "/Users/nwh/Dropbox/code/lusol_mex/doc/tutorial/lusol_mex.tex" nil 2 "6" "\\section{Usage}" 4281)
+
+(toc "toc" "      6.1 Options" "/Users/nwh/Dropbox/code/lusol_mex/doc/tutorial/lusol_mex.tex" nil 3 "6.1" "\\subsection{Options}" 5032)
+
+(toc "toc" "      6.2 Factorize" "/Users/nwh/Dropbox/code/lusol_mex/doc/tutorial/lusol_mex.tex" nil 3 "6.2" "\\subsection{Factorize}" 5683)
+
+(toc "toc" "      6.3 Solve" "/Users/nwh/Dropbox/code/lusol_mex/doc/tutorial/lusol_mex.tex" nil 3 "6.3" "\\subsection{Solve}" 6279)
+
+(toc "toc" "      6.4 Multiply" "/Users/nwh/Dropbox/code/lusol_mex/doc/tutorial/lusol_mex.tex" nil 3 "6.4" "\\subsection{Multiply}" 6668)
+
+(toc "toc" "      6.5 Update" "/Users/nwh/Dropbox/code/lusol_mex/doc/tutorial/lusol_mex.tex" nil 3 "6.5" "\\subsection{Update}" 6690)
+
+(eof "/Users/nwh/Dropbox/code/lusol_mex/doc/tutorial/lusol_mex.tex")
+))
+

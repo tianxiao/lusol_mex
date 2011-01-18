@@ -1,6 +1,8 @@
-* TODO produce method to obtain L and U factors
-* TODO get_properties does not need to be run after each call to lusol_mex,
+* DONE produce method to obtain L and U factors
+* DONE get_properties does not need to be run after each call to lusol_mex,
   only when the user wants to look at a property.
-* TODO fix comments.
-* TODO package and post somewhere
-* TODO change the way storage parameters are handled
+* DONE package and post somewhere
+* DONE change the way storage parameters are handled
+
+* fix mulLt
+

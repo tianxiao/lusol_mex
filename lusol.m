@@ -22,9 +22,63 @@ classdef lusol < handle
   % Update:
   %  inform = lu.repcol(v,j);
   %
-  % Note: there are other multiply, solve, and update methods.
+  % Table of lusol methods:
+  % 
+  %   | get options structure   | lusol.luset     |
+  %   | main factorize method   | lusol.factorize |
+  %   | get factorization stats | lusol.stats     |
+  %   | get inital L factor     | lusol.L0        |
+  %   | get U factor            | lusol.U         |
+  %   | main multiply method    | lusol.mul       |
+  %   | compute A*x             | lusol.mulA      |
+  %   | compute A'*x            | lusol.mulAt     |
+  %   | compute L*x             | lusol.mulL      |
+  %   | compute L'*x            | lusol.mulLt     |
+  %   | compute U*x             | lusol.mulU      |
+  %   | compute U'*x            | lusol.mulUt     |
+  %   | main solve method       | lusol.solve     |
+  %   | solve A*x = b           | lusol.solveA    |
+  %   | solve A'*x = b          | lusol.solveAt   |
+  %   | solve L*x = b           | lusol.solveL    |
+  %   | solve L'*x = b          | lusol.solveLt   |
+  %   | solve U*x = b           | lusol.solveU    |
+  %   | solve U'*x = b          | lusol.solveUt   |
+  %   | replace a column        | lusol.repcol    |
+  %   | replace a row           | lusol.reprow    |
+  %   | add a column            | lusol.addcol    |
+  %   | add a row               | lusol.addrow    |
+  %   | delete a column         | lusol.delcol    |
+  %   | delete a row            | lusol.delrow    |
+  %   | rank 1 modification     | lusol.r1mod     |
   %
-  
+  % See also:
+  %  lusol.luset
+  %  lusol.factorize
+  %  lusol.stats
+  %  lusol.L0
+  %  lusol.U
+  %  lusol.mul
+  %  lusol.mulA
+  %  lusol.mulAt
+  %  lusol.mulL
+  %  lusol.mulLt
+  %  lusol.mulU
+  %  lusol.mulUt
+  %  lusol.solve
+  %  lusol.solveA
+  %  lusol.solveAt
+  %  lusol.solveL
+  %  lusol.solveLt
+  %  lusol.solveU
+  %  lusol.solveUt
+  %  lusol.repcol
+  %  lusol.reprow
+  %  lusol.addcol
+  %  lusol.addrow
+  %  lusol.delcol
+  %  lusol.delrow
+  %  lusol.r1mod
+
   properties (Access=private)
     
     % object parameters

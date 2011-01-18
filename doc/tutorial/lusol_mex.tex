@@ -1,0 +1,251 @@
+\documentclass[11pt]{article}
+\usepackage{geometry}
+\geometry{letterpaper}
+%\geometry{landscape}
+\usepackage[parfill]{parskip} 
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{epstopdf}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{cite}
+\usepackage{xspace}
+
+%% some math commands
+\newcommand{\T}{^T}
+\newcommand{\lmex}{\texttt{lusol\_mex}\xspace}
+
+\title{LUSOL Matlab Interface Tutorial}
+\author{Nick Henderson}
+%\date{}
+
+\usepackage[pdftex,colorlinks]{hyperref}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+
+This tutorial documents the installation and use of a Matlab mex interface to
+Michael Saunders'
+\href{http://www.stanford.edu/group/SOL/software/lusol.html}{LUSOL}.  The
+interface, named \lmex, uses LUSOL to compute a sparse LU factorization of a
+matrix.  The interface provides access to all solve, multiply, and update
+subroutines.  Source code and binaries can be downloaded from
+
+\begin{center}
+\url{https://github.com/nwh/lusol_mex/}
+\end{center}
+
+\section{System requirements}
+
+\begin{itemize}
+\item Matlab version 7.6 (R2008a) or newer.  \lmex uses a style of
+  object-oriented programming that was introduced in R2008a.  Earlier versions
+  of Matlab are not supported.
+\item Compatible C compiler.  Each version of Matlab is compatible with a
+  certain compiler.  Refer to the
+  \href{http://www.mathworks.com/support/compilers/previous_releases.html}{list}
+  on Mathwork's website.
+\item Compatible fortran compiler.  This need not be the compiler specified in
+  the Matlab list.  The fortran compiler is used to for code that will be
+  linked to the mex routine.  It is required that the fortran compiler be
+  ``compatible'' with the C compiler that mex uses.
+\end{itemize}
+
+\lmex has been successfully built under a few different scenarios:
+\begin{itemize}
+\item Mac OS X 10.6, Matlab R2009a, \texttt{gcc} from Xcode, and
+  \href{http://www.g95.org/}{\tt g95} or
+  \href{http://r.research.att.com/tools/}{\tt gfortran}.
+\item Ubuntu 10.10 64-bit, Matlab R2010b, \texttt{gcc-4.3}, and
+  \texttt{gfortran-4.3}.
+\end{itemize}
+
+\section{Building}
+
+\begin{enumerate}
+\item Run \texttt{mex -setup} to generate
+  \texttt{\$HOME/.matlab/[VER]/mexopts.sh}.
+\item Modify \texttt{\$HOME/.matlab/[VER]/mexopts.sh} to point to the correct
+  compiler version.  The change must be made in the section corresponding to
+  your system architecture.  For example, variables for 64-bit linux are set in
+  the \texttt{glnxa64} section.
+\item Modify the \texttt{makefile} in the \texttt{lusol\_mex/} directory.
+\item Run \texttt{make}.
+\item Make sure the \texttt{lusol\_mex/} directory is added to your matlab
+  path.
+\end{enumerate}
+
+\section{Testing}
+
+There is a small set of test cases in the \lmex directory.  These require the
+Matlab xUnit Test Framework to run.  See:
+
+\begin{center}
+\url{http://www.mathworks.com/matlabcentral/fileexchange/22846-matlab-xunit-test-framework}
+\end{center}
+
+With the testing framework installed, the command \texttt{runtests} will
+execute all tests in \texttt{lusol\_test.m}.
+
+\section{Design}
+
+\lmex makes use of object-oriented programming in Matlab for efficiency and
+ease of use.  Here is an example that factorizes a random sparse matrix:
+
+\begin{verbatim}
+>> A = sprand(30,30,.1);
+>> mylu = lusol(A);
+\end{verbatim}
+
+The symbol \texttt{mylu} now refers to an object in the Matlab workspace.  It
+contains all of the data for the sparse factorization and provides access to
+methods for solving $Ax=b$, computing products $Ax$, and performing stable
+sparse updates.
+
+\begin{verbatim}
+>> % solve Ax=b
+>> b = ones(30,1);
+>> x = mylu.solve(b);
+>>
+>> % multiply Ax
+>> b2 = mylu.mulA(x);
+>>
+>> % check the result
+>> norm(b-b2)
+
+ans =
+
+   1.1285e-14
+\end{verbatim}
+
+Direct access to the data is not provided and usually not needed.  It
+is possible to obtain sparse $L$ and $U$ factors with the methods:
+
+\begin{verbatim}
+>> L = mylu.L0();
+>> U = mylu.U();
+\end{verbatim}
+
+The method to obtain the $L$ factor is named \texttt{L0} to indicate
+that it returns the initial $L$ factor.  LUSOL stores updated to the
+$L$ factor in product form.  The $U$ factor is always maintained.  Due
+to the structure of LUSOL data, the \texttt{L0} and \texttt{U} methods
+are required to copy and manipulate data.
+
+\section{Usage}
+
+The best source of information on the usage of \lmex is with Matlab's
+\texttt{help} and \texttt{doc} commands.  Try:
+
+\begin{verbatim}
+>> help lusol
+>> % or
+>> doc lusol
+\end{verbatim}
+
+The first thing to do is to create a \texttt{lusol} object.  This
+requires a matrix $A$ and possibly some options:
+
+\begin{verbatim}
+>> mylu = lusol(A);
+>> mylu = lusol(A,options);
+>> mylu = lusol(A,'pivot','TRP','Ltol1','5.0');
+\end{verbatim}
+
+The first command instantiates the \texttt{lusol} object and
+factorizes $A$.  Matrix $A$ can be scalar (\texttt{A = 1}), however it
+may not be empty (\texttt{A = []}).  The second command sets
+parameters using the \texttt{options} struct.  The third command sets
+parameters using the key-value format.
+
+\subsection{Options}
+
+See \texttt{help lusol.luset} for details.  The best documentation for
+the input parameters is the fortran code in the file \texttt{lusol.f}.
+
+To create an options structure with defaults:
+
+\begin{verbatim}
+>> options = lusol.luset();
+\end{verbatim}
+
+Options may then be changed by modifying the structure fields.  You
+can also change the default options using key-value pairs in the
+parameter list to \texttt{lusol.luset}.  For example:
+
+\begin{verbatim}
+>> options = lusol.luset('pivot','TRP');
+\end{verbatim}
+
+Note that \texttt{lusol.luset} is a ``static'' method.  It can be
+called without creating a \texttt{lusol} object.
+
+\subsection{Factorize}
+
+The \texttt{factorize} method can be used to factorize a (new) matrix
+after a \texttt{lusol} object has already been created.  Reallocation
+will only occur if the new matrix requires more storage or if the
+parameter \texttt{nzinit} is set larger. Example:
+
+\begin{verbatim}
+>> % mylu is already in the workspace
+>> [info nsing depcol] = mylu.factorize(A,options);
+\end{verbatim}
+
+The output:
+\begin{description}
+\item[\tt info] a status flag
+\item[\tt nsing] number of apparent singularities
+\item[\tt depcol] logical index indicating dependent columns
+\end{description}
+
+\subsection{Solve}
+
+The \texttt{solve} method allows solves with $A$, $A\T$, $L$, $L\T$,
+$U$, $U\T$.  See \texttt{help lusol.solve}.  The relevant methods are:
+
+\begin{itemize}
+\item \texttt{solveA}
+\item \texttt{solveAt}
+\item \texttt{solveL}
+\item \texttt{solveLt}
+\item \texttt{solveU}
+\item \texttt{solveUt}
+\end{itemize}
+
+These methods all call \texttt{solve} with the correct mode.
+
+\subsection{Multiply}
+
+The \texttt{mul} method allows products with $A$, $A\T$, $L$, $L\T$,
+$U$, $U\T$.  See \texttt{help lusol.mul}.  The relevant methods are:
+
+\begin{itemize}
+\item \texttt{mulA}
+\item \texttt{mulAt}
+\item \texttt{mulL}
+\item \texttt{mulLt}
+\item \texttt{mulU}
+\item \texttt{mulUt}
+\end{itemize}
+
+These methods all call \texttt{mul} with the correct mode.
+
+\subsection{Update}
+
+\lmex provides access to all update subroutines in LUSOL:
+
+\begin{description}
+\item[\texttt{repcol}] replace a column
+\item[\texttt{reprow}] replace a row
+\item[\texttt{addcol}] add a row
+\item[\texttt{addrow}] add a column
+\item[\texttt{delcol}] delete a row
+\item[\texttt{delrow}] delete a column
+\item[\texttt{r1mod}] rank 1 update
+\end{description}
+
+\end{document}
