@@ -11,6 +11,7 @@ http://www.stanford.edu/group/SOL/software/lusol.html
 
 2010-11-12: First version of the readme file.
 2010-12-15: Added xunit tests.
+2011-01-17: added tutorial in doc/
 
 Please send comments regarding the mex interface to:
   Nick Henderson
