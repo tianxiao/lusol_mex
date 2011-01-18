@@ -29,6 +29,8 @@ classdef lusol < handle
   %   | get factorization stats | lusol.stats     |
   %   | get inital L factor     | lusol.L0        |
   %   | get U factor            | lusol.U         |
+  %   | get row permutation     | lusol.p         |
+  %   | get column permutation  | lusol.q         |
   %   | main multiply method    | lusol.mul       |
   %   | compute A*x             | lusol.mulA      |
   %   | compute A'*x            | lusol.mulAt     |
@@ -57,6 +59,8 @@ classdef lusol < handle
   %  lusol.stats
   %  lusol.L0
   %  lusol.U
+  %  lusol.p
+  %  lusol.q
   %  lusol.mul
   %  lusol.mulA
   %  lusol.mulAt
