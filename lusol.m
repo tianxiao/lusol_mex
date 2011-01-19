@@ -492,6 +492,40 @@ classdef lusol < handle
         obj.w, ...
         ret_inform);
       
+      % error checking
+      switch ret_inform
+        case 0
+          % ok, LU factors obtained
+        case 1
+          % ok, LU factors obtained, rank deficient
+        case 3
+          % error, some index pair indc(l), indr(l) lies outside
+          % the matrix dimensions 1:m , 1:n.  Should not happen, because
+          % matlab controls the input to lu1fac.
+          err = MException('lusol:factorize','LUSOL reports improper input. inform = %d',ret_inform);
+          throw(err);
+        case 4
+          % error, some index pair indc(l), indr(l) duplicates
+          % another such pair.  Should not happen, because
+          % matlab controls the input to lu1fac.
+          err = MException('lusol:factorize','LUSOL reports improper input. inform = %d',ret_inform);
+          throw(err);
+        case 7
+          % error, not enough storage.  User needs to increase nzinit
+          % parameter
+          err = MException('lusol:factorize','LUSOL needs more storage.  Increase the nzinit parameter.  inform = %d',ret_inform);
+          throw(err);
+        case 8
+          % some other fatal error
+          err = MException('lusol:factorize','LUSOL other fatal error. inform = %d',ret_inform);
+          throw(err);
+        case 9
+          % error, no diagonal pivot could be found with TSP or TDP.
+          % The matrix must not be sufficiently definite or quasi-definite
+          err = MException('lusol:factorize','LUSOL no diagonal pivot could be found with TSP or TDP. inform = %d',ret_inform);
+          throw(err);
+      end
+      
       obj.depcol_lx = (obj.w(1:obj.n) <= 0.0);
       
       % user requests inform flag
@@ -600,10 +634,10 @@ classdef lusol < handle
       %nsing  number of singularities marked in depcol
       %
       % This method may not be called after updates.  The nsing parameter
-      % is only computer after a full factorize.
+      % is only computed after a full factorize.
       %
       
-      % this method only works if no updated have occured.
+      % this method only works if no updates have occured.
       obj.update_check();
       
       k = double(obj.luparm(11));
@@ -834,13 +868,26 @@ classdef lusol < handle
       % Usage:
       %  x = lu.solve(b,mode)
       %
-      % mode
+      % Input:
+      %  b = right hand side vector
+      %  mode = solution mode (see table below)
+      %
+      % Output:
+      %  x = solution vector
+      %  inform = status flag
+      %  resid = 1-norm of residual
+      %
+      % Modes:
       %  1    x  solves   L x = b
       %  2    x  solves   L'x = b
       %  3    x  solves   U x = b
       %  4    x  solves   U'x = b
       %  5    x  solves   A x = b (default)
       %  6    x  solves   A'x = b
+      %
+      % inform flags:
+      %  0 = successful solve
+      %  1 = if U is singular, and residual is non-zero
       %
       
       if nargin < 3
@@ -926,26 +973,38 @@ classdef lusol < handle
     end
     function [x inform resid] = solveA(obj,b)
       %solveA  solve A x = b.
+      %
+      % see also lusol.solve
       [x inform resid] = obj.solve(b,5);
     end
     function [x inform resid] = solveAt(obj,b)
       %solveAt  solve A'x = b.
+      %
+      % see also lusol.solve
       [x inform resid] = obj.solve(b,6);
     end
     function [x inform] = solveL(obj,b)
       %solveL  solve L x = b.
+      %
+      % see also lusol.solve
       [x inform] = obj.solve(b,1);
     end
     function [x inform] = solveLt(obj,b)
       %solveLt  solve L'x = b.
+      %
+      % see also lusol.solve
       [x inform] = obj.solve(b,2);
     end
     function [x inform resid] = solveU(obj,b)
       %solveU  solve U x = b.
+      %
+      % see also lusol.solve
       [x inform resid] = obj.solve(b,3);
     end
     function [x inform resid] = solveUt(obj,b)
       %solveUt  solve U'x = b.
+      %
+      % see also lusol.solve
       [x inform resid] = obj.solve(b,4);
     end
     
@@ -1046,28 +1105,40 @@ classdef lusol < handle
     end
     function y = mulA(obj,x)
       %mulA  compute y = A x.
+      %
+      % see also lusol.mul
       y = obj.mul(x,5);
     end
     function y = mulAt(obj,x)
       %mulAt  compute y = A'x.
       %
       % Warning: this does not seem to work at the moment.
+      %
+      % see also lusol.mul
       y = obj.mul(x,6);
     end
     function y = mulL(obj,x)
       %mulL  compute y = L x.
+      %
+      % see also lusol.mul
       y = obj.mul(x,1);
     end
     function y = mulLt(obj,x)
       %mulLt  compute y = L'x.
+      %
+      % see also lusol.mul
       y = obj.mul(x,2);
     end
     function y = mulU(obj,x)
       %mulU  compute y = U x.
+      %
+      % see also lusol.mul
       y = obj.mul(x,3);
     end
     function y = mulUt(obj,x)
       %mulUt  compute y = U'x.
+      %
+      % see also lusol.mul
       y = obj.mul(x,4);
     end
     
