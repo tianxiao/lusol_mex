@@ -27,6 +27,7 @@ classdef lusol < handle
   %   | get options structure   | lusol.luset     |
   %   | main factorize method   | lusol.factorize |
   %   | get factorization stats | lusol.stats     |
+  %   | get rank of matrix      | lusol.rank      |
   %   | get inital L factor     | lusol.L0        |
   %   | get U factor            | lusol.U         |
   %   | get row permutation     | lusol.p         |
@@ -643,9 +644,21 @@ classdef lusol < handle
       k = double(obj.luparm(11));
     end
     
-    function k = nrank(obj)
-      %nrank  the number of nonempty rows of U
-      k = double(obj.luparm(16));
+    function k = rank(obj)
+      %rank  the rank of the matrix determined by the number of independent columns
+      %
+      % This method uses the LUSOL parameter nsing.  This is only computed
+      % after a full factorize.  Thus this method should not be used to
+      % determine the rank of a matrix after updates.  In that case look at
+      % the flags that are returned by the update methods.
+      %
+      % Rank determination with LUSOL is more reliable under threshold rook
+      % pivoting.  Example options:
+      %
+      %  options = lusol.luset('pivot','TRP','Ltol1',10)
+      %
+      
+      k = double(obj.n) - double(obj.luparm(11));
     end
     
     function d = depcol(obj)
