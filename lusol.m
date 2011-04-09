@@ -704,7 +704,7 @@ classdef lusol < handle
       % returns U as an upper triangular matrix with permutation vectors p
       % and q.  The third call returns sparse permutation matrices P and Q.
       % The result of the three calls would produce:
-      %   U1(p,1) == P*U1*Q == U2 == upper triangular
+      %   U1(p,q) == P*U1*Q == U2 == upper triangular
       %
       
       %
