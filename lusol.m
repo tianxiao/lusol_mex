@@ -23,7 +23,7 @@ classdef lusol < handle
   %  inform = lu.repcol(v,j);
   %
   % Table of lusol methods:
-  % 
+  %
   %   | get options structure   | lusol.luset     |
   %   | main factorize method   | lusol.factorize |
   %   | get factorization stats | lusol.stats     |
@@ -83,8 +83,8 @@ classdef lusol < handle
   %  lusol.delcol
   %  lusol.delrow
   %  lusol.r1mod
-
-  properties (Access=private)
+  
+  properties (SetAccess=private)
     
     % object parameters
     
@@ -151,8 +151,8 @@ classdef lusol < handle
     
     % other
     
-    depcol_lx = 0; % logical index indicating dependent columns after a 
-                   % factorize
+    depcol_lx = 0; % logical index indicating dependent columns after a
+    % factorize
     
   end
   
@@ -245,7 +245,7 @@ classdef lusol < handle
     
     function parse_options(obj,varargin)
       %parse_options  process the options structure to set parameters.
-
+      
       % use luset to parse user input
       options = obj.luset(varargin{:});
       
@@ -316,7 +316,7 @@ classdef lusol < handle
     function allocate(obj,nzmax,mlen,nlen)
       %allocate  allocate LUSOL storage arrays
       %
-      % LUSOL operates on many arrays.  This method allocates all of them 
+      % LUSOL operates on many arrays.  This method allocates all of them
       % to an appropriate size.  Care is taken to not reallocate if it is
       % not needed.
       %
@@ -374,7 +374,7 @@ classdef lusol < handle
       end
     end
     
-  end 
+  end
   
   methods
     
@@ -383,7 +383,7 @@ classdef lusol < handle
     function obj = lusol(A,varargin)
       %lusol  constructor for lusol object, factorize A
       %
-      % Creates lusol object and factorizes A.  
+      % Creates lusol object and factorizes A.
       %
       % Example:
       %   mylu = lusol(A);
@@ -875,7 +875,7 @@ classdef lusol < handle
     
     % solve methods
     
-    function [x inform resid] = solve(obj,b,mode)
+    function [x inform resid] = solve_mex(obj,b,mode)
       %solve  call lu6sol to perform various solves with L and U factors.
       %
       % Usage:
@@ -984,41 +984,102 @@ classdef lusol < handle
       inform = obj.luparm(10);
       resid = obj.parmlu(20);
     end
-    function [x inform resid] = solveA(obj,b)
-      %solveA  solve A x = b.
-      %
-      % see also lusol.solve
-      [x inform resid] = obj.solve(b,5);
+    
+    function [X inform resid] = solve(obj,B,mode)
+      
+      if isvector(B)
+        % B is a vector, pass to obj.solve_mex and finish
+        [X inform resid] = obj.solve_mex(B,mode);
+        return;
+      end
+      
+      % B is a matrix, allocate storage and loop to solve for matrix
+      
+      % get size of B
+      [Br Bc] = size(B);
+      
+      % compute size of X
+      Xc = Bc;
+      switch mode
+        case 1 % X  solves   L X = B
+          % B must have m rows
+          if Br ~= obj.m, error('lusol:solve','B has incorrect size.'); end
+          % X is m by Bc
+          Xr = obj.m;
+        case 2 % X  solves   L'X = B
+          % B must have m rows
+          if Br ~= obj.m, error('lusol:solve','B has incorrect size.'); end
+          % X is m by Bc
+          Xr = obj.m;
+        case 3 % X  solves   U X = B
+          % B must have m rows
+          if Br ~= obj.m, error('lusol:solve','B has incorrect size.'); end
+          % X is n by Bc
+          Xr = obj.n;
+        case 4 % X  solves   U'X = B
+          % B must have n rows
+          if Br ~= obj.n, error('lusol:solve','B has incorrect size.'); end
+          % X is m by Bc
+          Xr = obj.m;
+        case 5 % X  solves   A X = B
+          % B must have m rows
+          if Br ~= obj.m, error('lusol:solve','B has incorrect size.'); end
+          % X is n by Bc
+          Xr = obj.n;
+        case 6 % X  solves   A'X = B
+          % B must have n rows
+          if Br ~= obj.n, error('lusol:solve','B has incorrect size.'); end
+          % X is m by Bc
+          Xr = obj.m;
+      end
+      
+      % allocate space for output X
+      X = zeros(Xr,Xc);
+      inform = zeros(1,Bc);
+      resid = zeros(1,Bc);
+      
+      % compute solutions for all columns
+      for j = 1:Bc
+        [X(:,j) inform(j) resid(j)] = obj.solve_mex(B(:,j),mode);
+      end
+      
     end
-    function [x inform resid] = solveAt(obj,b)
-      %solveAt  solve A'x = b.
+    
+    function [X inform resid] = solveA(obj,B)
+      %solveA  solve A X = B.
       %
       % see also lusol.solve
-      [x inform resid] = obj.solve(b,6);
+      [X inform resid] = obj.solve(B,5);
     end
-    function [x inform] = solveL(obj,b)
-      %solveL  solve L x = b.
+    function [X inform resid] = solveAt(obj,B)
+      %solveAt  solve A'X = B.
       %
       % see also lusol.solve
-      [x inform] = obj.solve(b,1);
+      [X inform resid] = obj.solve(B,6);
     end
-    function [x inform] = solveLt(obj,b)
-      %solveLt  solve L'x = b.
+    function [X inform] = solveL(obj,B)
+      %solveL  solve L X = B.
       %
       % see also lusol.solve
-      [x inform] = obj.solve(b,2);
+      [X inform] = obj.solve(B,1);
     end
-    function [x inform resid] = solveU(obj,b)
-      %solveU  solve U x = b.
+    function [X inform] = solveLt(obj,B)
+      %solveLt  solve L'X = B.
       %
       % see also lusol.solve
-      [x inform resid] = obj.solve(b,3);
+      [X inform] = obj.solve(B,2);
     end
-    function [x inform resid] = solveUt(obj,b)
-      %solveUt  solve U'x = b.
+    function [X inform resid] = solveU(obj,B)
+      %solveU  solve U X = B.
       %
       % see also lusol.solve
-      [x inform resid] = obj.solve(b,4);
+      [X inform resid] = obj.solve(B,3);
+    end
+    function [X inform resid] = solveUt(obj,B)
+      %solveUt  solve U'X = B.
+      %
+      % see also lusol.solve
+      [X inform resid] = obj.solve(B,4);
     end
     
     % multiply methods
@@ -1643,6 +1704,6 @@ classdef lusol < handle
       
     end
     
-  end 
+  end
   
 end % classdef
