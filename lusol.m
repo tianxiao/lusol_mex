@@ -878,8 +878,11 @@ classdef lusol < handle
     function [x inform resid] = solve_mex(obj,b,mode)
       %solve  call lu6sol to perform various solves with L and U factors.
       %
+      % Performs data processing and direct call to mex function for 
+      % solves.  Right hand side must be a vector.
+      %
       % Usage:
-      %  x = lu.solve(b,mode)
+      %  x = lu.solve_mex(b,mode)
       %
       % Input:
       %  b = right hand side vector
@@ -986,9 +989,40 @@ classdef lusol < handle
     end
     
     function [X inform resid] = solve(obj,B,mode)
-      
+      %solve  solve systems with matrix factors
+      %
+      % This function solves all of the relavent systems of equations.  If 
+      % right hand side B is a matrix, it will solve for matrix X.
+      %
+      % Input:
+      %  B = right hand size, can be a vector or a matrix
+      %  mode = solution mode, see table below
+      %
+      % Output:
+      %  X = solution matrix
+      %  inform = status flag vector, one element for each column of B
+      %  resid = 1-norm of residuals for each solve
+      %
+      % Modes:
+      %  1    X  solves   L X = B
+      %  2    X  solves   L'X = B
+      %  3    X  solves   U X = B
+      %  4    X  solves   U'X = B
+      %  5    X  solves   A X = B (default)
+      %  6    X  solves   A'X = B
+      %
+      % inform flags:
+      %  0 = successful solve
+      %  1 = if U is singular, and residual is non-zero
+      %
+
+      % set default mode
+      if nargin < 3
+        mode = 5;
+      end
+
+      % if B is a vector, pass to obj.solve_mex and finish
       if isvector(B)
-        % B is a vector, pass to obj.solve_mex and finish
         [X inform resid] = obj.solve_mex(B,mode);
         return;
       end
@@ -1031,6 +1065,8 @@ classdef lusol < handle
           if Br ~= obj.n, error('lusol:solve','B has incorrect size.'); end
           % X is m by Bc
           Xr = obj.m;
+        otherwise
+          error('lusol:solve','unrecognized mode.')
       end
       
       % allocate space for output X
@@ -1084,13 +1120,23 @@ classdef lusol < handle
     
     % multiply methods
     
-    function y = mul(obj,x,mode)
-      %mul  call LUSOL to perform various multiplies with L and U factors.
+    function y = mul_mex(obj,x,mode)
+      %mul_mex  call LUSOL to perform various multiplies with L and U factors.
+      %
+      % Performs data processing and direct call to mex function to compute
+      % a matrix vector multiply with the desired factor.
       %
       % Usage:
-      %  y = lu.mul(x,mode)
+      %  y = lu.mul_mex(x,mode)
       %
-      % mode
+      % Input:
+      %  x = vector to multiply
+      %  mode = multiply mode, see table below
+      %
+      % Output:
+      %  y = product of desired factor and x
+      %
+      % Modes:
       %  1    y = L x
       %  2    y = L'x
       %  3    y = U x
@@ -1098,22 +1144,27 @@ classdef lusol < handle
       %  5    y = A x (default)
       %  6    y = A'x
       %
-      % Warning: it seems like mulA works, but mulAt does not.
+      % Warning: mulLt (mode=2) and mulAt (mode=6) do not work.
+      %          currently, the code will throw an error if this is attempted.
       %
+      
+      % handle optional input
       if nargin < 3
         mode = 5;
       end
+
+      % TODO fix lusol.f
+      if mode == 2 || mode == 6
+        error('lusol:mul','lusol cannot do L''*x or A''*x.')
+      end
       
+      % case mode as int32 for passing to mex function
       mode = int32(mode);
       
       % check if x is a vector
       if ~isvector(x)
         error('lusol:mul','x must be a vector.');
       end
-      
-      % force matlab to copy
-      % not needed with padding method
-      % x(1) = x(1);
       
       % orient x vector
       x = double(full(x(:)));
@@ -1177,43 +1228,134 @@ classdef lusol < handle
       end
       
     end
-    function y = mulA(obj,x)
-      %mulA  compute y = A x.
+    
+    function Y = mul(obj,X,mode)
+      %mul  compute matrix multiplies with various factors
+      %
+      % Perform matrix-vector or matrix-matrix multiply with desired matrix
+      % factors.
+      %
+      % Usage:
+      %  Y = lu.mul(X,mode)
+      %
+      % Input:
+      %  X = matrix or vector to compute multiply
+      %  mode = multiply mode, see table below
+      %
+      % Output:
+      %  Y = product of desired factor and X
+      %
+      % Mode:
+      %  1    Y = L X
+      %  2    Y = L'X
+      %  3    Y = U X
+      %  4    Y = U'X
+      %  5    Y = A X (default)
+      %  6    Y = A'X
+      %
+      % Warning: mulLt (mode=2) and mulAt (mode=6) do not work.
+      %
+
+      % set default mode
+      if nargin < 3
+        mode = 5;
+      end
+
+      % if X is a vector, pass to obj.mul_mex and finish
+      if isvector(X)
+        Y = obj.mul_mex(X,mode);
+        return;
+      end
+      
+      % X is a matrix, allocate storage and loop to multiply with matrix
+      
+      % get size of X
+      [Xr Xc] = size(X);
+      
+      % compute size of X
+      Yc = Xc;
+      switch mode
+        case 1 %  Y = L X
+          % X must have m rows
+          if Xr ~= obj.m, error('lusol:mul','Y has incorrect size.'); end
+          % Y is m by Xc
+          Yr = obj.m;
+        case 2 %  Y = L'X
+          % X must have m rows
+          if Xr ~= obj.m, error('lusol:mul','Y has incorrect size.'); end
+          % Y is m by Xc
+          Yr = obj.m;
+        case 3 %  Y = U X
+          % X must have n rows
+          if Xr ~= obj.n, error('lusol:mul','Y has incorrect size.'); end
+          % Y is m by Xc
+          Yr = obj.m;
+        case 4 %  Y = U'X
+          % X must have m rows
+          if Xr ~= obj.m, error('lusol:mul','Y has incorrect size.'); end
+          % Y is n by Xc
+          Yr = obj.n;
+        case 5 %  Y = A X
+          % X must have n rows
+          if Xr ~= obj.n, error('lusol:mul','Y has incorrect size.'); end
+          % Y is m by Xc
+          Yr = obj.m;
+        case 6 %  Y = A'X
+          % X must have m rows
+          if Xr ~= obj.m, error('lusol:mul','Y has incorrect size.'); end
+          % Y is n by Xc
+          Yr = obj.n;
+        otherwise
+          error('lusol:mul','unrecognized mode.')
+      end
+      
+      % allocate space for output Y
+      Y = zeros(Yr,Yc);
+      
+      % compute solutions for all columns
+      for j = 1:Xc
+        [Y(:,j)] = obj.mul_mex(X(:,j),mode);
+      end
+
+    end
+    
+    function Y = mulA(obj,X)
+      %mulA  compute Y = A X.
       %
       % see also lusol.mul
-      y = obj.mul(x,5);
+      Y = obj.mul(X,5);
     end
-    function y = mulAt(obj,x)
-      %mulAt  compute y = A'x.
+    function Y = mulAt(obj,X)
+      %mulAt  compute Y = A'X.
       %
       % Warning: this does not seem to work at the moment.
       %
       % see also lusol.mul
-      y = obj.mul(x,6);
+      Y = obj.mul(X,6);
     end
-    function y = mulL(obj,x)
-      %mulL  compute y = L x.
+    function Y = mulL(obj,X)
+      %mulL  compute Y = L X.
       %
       % see also lusol.mul
-      y = obj.mul(x,1);
+      Y = obj.mul(X,1);
     end
-    function y = mulLt(obj,x)
-      %mulLt  compute y = L'x.
+    function Y = mulLt(obj,X)
+      %mulLt  compute Y = L'X.
       %
       % see also lusol.mul
-      y = obj.mul(x,2);
+      Y = obj.mul(X,2);
     end
-    function y = mulU(obj,x)
-      %mulU  compute y = U x.
+    function Y = mulU(obj,X)
+      %mulU  compute Y = U X.
       %
       % see also lusol.mul
-      y = obj.mul(x,3);
+      Y = obj.mul(X,3);
     end
-    function y = mulUt(obj,x)
-      %mulUt  compute y = U'x.
+    function Y = mulUt(obj,X)
+      %mulUt  compute Y = U'X.
       %
       % see also lusol.mul
-      y = obj.mul(x,4);
+      Y = obj.mul(X,4);
     end
     
     % update methods
