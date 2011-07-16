@@ -24,10 +24,10 @@ Y1 = mylu.mulL(X1);
 norm(L*X1 - Y1,1)
 
 %% mulLt
-% Xc2 = 5;
-% X2 = rand(m,Xc2);
-% Y2  = mylu.mulLt(X2);
-% norm(L'*X2 - Y2,1)
+Xc2 = 5;
+X2 = rand(m,Xc2);
+Y2  = mylu.mulLt(X2);
+norm(L'*X2 - Y2,1)
 
 %% mulU
 Xc3 = 5;
@@ -48,7 +48,7 @@ Y5   = mylu.mulA(X5);
 norm(A*X5 - Y5,1)
 
 %% mulAt
-% Xc6 = 5;
-% X6 = rand(m,Xc6);
-% Y6   = mylu.mulAt(X6);
-% norm(A'*X6 - Y6,1)
+Xc6 = 5;
+X6 = rand(m,Xc6);
+Y6   = mylu.mulAt(X6);
+norm(A'*X6 - Y6,1)

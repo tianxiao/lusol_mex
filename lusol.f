@@ -5237,6 +5237,7 @@
 !
 ! 03 Mar 2004: lusol6b.f is essentially lu6b.for from VMS days.
 !              integer*4 changed to integer  .
+! 14 Jul 2011: lu6mul's v = L'*v fixed.
 !+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
       subroutine lu6mul( mode, m, n, v, w,
@@ -5300,8 +5301,11 @@
 
 !     ==================================================================
 !     mode = 2 or 6.    Set  v = L(t)*v.
+!     14 Jul 2011: We have to run forward thru the columns of L.
+!                  The first column is at the end of memory.
 !     ==================================================================
-  200 do l = lenl, 1, -1
+  200 l1 = lena + 1 - lenl
+      do l = lena, l1, -1
          j     = indc(l)
          if (v(j) .ne. zero) then
             i     = indr(l)

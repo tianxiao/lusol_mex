@@ -1154,9 +1154,9 @@ classdef lusol < handle
       end
 
       % TODO fix lusol.f
-      if mode == 2 || mode == 6
-        error('lusol:mul','lusol cannot do L''*x or A''*x.')
-      end
+      %if mode == 2 || mode == 6
+      %  error('lusol:mul','lusol cannot do L''*x or A''*x.')
+      %end
       
       % case mode as int32 for passing to mex function
       mode = int32(mode);

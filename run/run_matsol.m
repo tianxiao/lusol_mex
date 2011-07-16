@@ -8,7 +8,7 @@ m = 20;
 n = 30;
 d = .2;
 A = sprand(m,n,d);
-spy(A)
+%spy(A)
 
 %% get lusol object
 mylu = lusol(A);

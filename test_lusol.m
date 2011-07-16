@@ -130,16 +130,16 @@ end
 
 % tests that fail
 
-% function test_mulAt(s)
-% mylu = lusol(s.A);
-% x = mylu.mulAt(s.y);
-% assertVectorsAlmostEqual(s.A'*s.y,x);
-% end
+function test_mulAt(s)
+mylu = lusol(s.A);
+x = mylu.mulAt(s.y);
+assertVectorsAlmostEqual(s.A'*s.y,x);
+end
 
-% function test_mulLt(s)
-% mylu = lusol(s.A);
-% L = mylu.L0();
-% x1 = L'*s.y;
-% x2 = mylu.mulLt(s.y);
-% assertVectorsAlmostEqual(x1,x2);
-% end
+function test_mulLt(s)
+mylu = lusol(s.A);
+L = mylu.L0();
+x1 = L'*s.y;
+x2 = mylu.mulLt(s.y);
+assertVectorsAlmostEqual(x1,x2);
+end
