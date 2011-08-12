@@ -1021,14 +1021,6 @@ classdef lusol < handle
         mode = 5;
       end
 
-      % if B is a vector, pass to obj.solve_mex and finish
-      if isvector(B)
-        [X inform resid] = obj.solve_mex(B,mode);
-        return;
-      end
-      
-      % B is a matrix, allocate storage and loop to solve for matrix
-      
       % get size of B
       [Br Bc] = size(B);
       
@@ -1253,22 +1245,12 @@ classdef lusol < handle
       %  5    Y = A X (default)
       %  6    Y = A'X
       %
-      % Warning: mulLt (mode=2) and mulAt (mode=6) do not work.
-      %
 
       % set default mode
       if nargin < 3
         mode = 5;
       end
 
-      % if X is a vector, pass to obj.mul_mex and finish
-      if isvector(X)
-        Y = obj.mul_mex(X,mode);
-        return;
-      end
-      
-      % X is a matrix, allocate storage and loop to multiply with matrix
-      
       % get size of X
       [Xr Xc] = size(X);
       
