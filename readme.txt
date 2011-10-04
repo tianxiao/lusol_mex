@@ -1,4 +1,4 @@
-lusol_mex provides a Matlab interface to Michael Saunder's LUSOL.
+lusol_mex provides a Matlab interface to Michael Saunders' LUSOL.
 
 LUSOL maintains LU factors of a square or rectangular sparse matrix A.
 
@@ -35,4 +35,3 @@ lusol.m       matlab class to drive LUSOL
 lusol_mex.c   automatically generated mex interface to lusol
 makefile      makefile to build the interface
 test_lusol.m  matlab xunit test cases for lusol.m, not complete coverage
-
